@@ -21,7 +21,11 @@ services:
       - "8080"
     ports:
       - "8080:8080"
+<<<<<<< HEAD
+    command: ["./wait-for-it.sh", "db-mysql:3306", "--", "mvn", "clean", "--", "spring-boot:run"]
+=======
     command: mvn clean spring-boot:run
+>>>>>>> aa4ee9ad2c3bb0da722d81883fabccaee8f55f30
     depends_on:
       - db-mysql
     restart: always

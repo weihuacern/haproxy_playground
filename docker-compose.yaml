@@ -6,7 +6,7 @@ services:
     environment:
       - MYSQL_DATABASE=helios
       - MYSQL_ROOT_PASSWORD=Helios123
-      - MYSQL_ROOT_HOST='%'
+      - MYSQL_ROOT_HOST=%
     ports:
      - "3306:3306"
     restart: always
@@ -18,10 +18,50 @@ services:
       - ./webapp:/webapp
       - ~/.m2:/root/.m2
     expose:
+      - "8081"
+    ports:
+      - "8081:8080"
+    command: ["bash", "/webapp/wait-for-it.sh", "db-mysql:3306", "--", "mvn", "clean", "--", "spring-boot:run"]
+    depends_on:
+      - db-mysql
+    restart: always
+  webapp-2:
+    container_name: webapp-2
+    build: ./webapp
+    working_dir: /webapp
+    volumes:
+      - ./webapp:/webapp
+      - ~/.m2:/root/.m2
+    expose:
+      - "8082"
+    ports:
+      - "8082:8080"
+    command: ["bash", "/webapp/wait-for-it.sh", "db-mysql:3306", "--", "mvn", "clean", "--", "spring-boot:run"]
+    depends_on:
+      - db-mysql
+    restart: always
+  webapp-3:
+    container_name: webapp-3
+    build: ./webapp
+    working_dir: /webapp
+    volumes:
+      - ./webapp:/webapp
+      - ~/.m2:/root/.m2
+    expose:
+      - "8083"
+    ports:
+      - "8083:8080"
+    command: ["bash", "/webapp/wait-for-it.sh", "db-mysql:3306", "--", "mvn", "clean", "--", "spring-boot:run"]
+    depends_on:
+      - db-mysql
+    restart: always
+  lb-haproxy:
+    container_name: lb-haproxy
+    build: ./haproxy
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    expose:
       - "8080"
     ports:
       - "8080:8080"
-    command: mvn clean spring-boot:run
-    depends_on:
-      - db-mysql
     restart: always
